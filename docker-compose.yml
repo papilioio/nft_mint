@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  hardhat:
+    build: ./hardhat_docker
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./hardhat_docker/src:/usr/src/app
+    ports:
+      - '8545:8545'
+    tty: true
