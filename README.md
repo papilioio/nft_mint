@@ -1,46 +1,105 @@
-# Advanced Sample Hardhat Project
+## github運用ルール
+masterブランチをリリースブランチとし基本的にmasterにはマージを行わない
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+このリポジトリをクローンした後`feat_kp`ブランチへチェックアウトし編集のコミット/プッシュは以降`feat_kp`ブランチへ行うこと
 
-Try running some of the following tasks:
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+`feat_kp`ブランチに加えた変更で作業が完了したものは`dev_kp`へプルリクエストを出す。その際Assigneesに`papilioio`を指定(横井が変更内容を確認し問題がなければ`dev_kp`へマージします)
 
-# Etherscan verification
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+## 環境構築手順
 
-```shell
-hardhat run --network ropsten scripts/deploy.ts
-```
+1. このリポジトリをローカルにクローン
+2. `feat_kp`ブランチにチェックアウト
+3. ターミナルからNFT_MINTディレクトリに移動し
+    ```
+    $npm install
+    ```
+    を実行
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+    * ターミナルに`cd `とと打ち込んだのちFinderからNFT_MINTフォルダをターミナルにドラッグ&ドロップすることでNFT_MINTへのパスが自動的に挿入される。
 
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
 
-# Performance optimizations
+4. 同ディレクトリ内で
+    ```
+    $docker-compose build
+    ```
+    を実行。ビルドには数分かかる。
+    
+    
+    完了すると`nft_mint_hardhat_1`と言うコンテナが作成され
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+    ```
+    $docker-compose up -d
+    ```
+    コマンドで`http://localhost:8545/`にHardhatのプライベートイーサリアムネットワークが起動する
+
+
+    起動の確認はターミナルに
+    ```
+    $curl http://localhost:8545
+    ```
+    を打ち込んで以下のレスポンスが返ってこればOK
+    ```
+    {"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: Unexpected end of JSON input"}}
+    ```
+
+    * 備考:
+    ```
+    $docker-compose up
+    ```
+    と`-d`オプションを外して起動するとターミナルにHardhatコンテナのログが表示されるようになる
+
+    `-d`オプションはバックグラウンドで実行するためのオプション(daemonの略)
+
+    `-d`オプションを外して起動するとイーサリアムチェーン内の処理がターミナルにログとして出力されるのでデバッグや直接gethのコマンドを実行するなど便利
+
+    その代わりHardhatコンテナへのコマンド入力しかできなくなるため、TypeScriptのコードの実行やSolidityのコンパイルを行う場合は新規ターミナルウィンドウを開いて再度`NFT_MINT`内に移動する事
+
+
+5. TypeScriptアプリケーションの実行
+
+    `NFT_MINT`ディレクトリ内で
+    ```
+    $npm run serve
+    ```
+    を実行。現状expressサーバーが`http://localhost:3000`に立ち上がり、ブラウザでアクセスするとHardhatチェーンにあるアカウント一覧がテキストで表示される。
+
+
+    以降expressのエンドポイントを作成しスマートコントラクトの操作を行う処理を実装していく
+
+
+6. TypeScript Appの終了
+
+    5のコマンドを実行したターミナルで`control+c`を押下することでシャットダウン
+
+    同様に`-d`オプションを外した`docker-compose up`を修了する際も`control+c`を押下
+
+
+7. 開発環境の起動と修了コマンドについて
+
+    4でbuildを行うと以降
+    ```
+    $docker-compose up -d
+    ```
+    で起動
+
+    ```
+    $docker-compose down
+    ```
+    で修了することが可能
+
+    TypeScriptアプリケーションはコンテナを作成していないので6の手順で修了させる
+
+
+8. 各ディレクトリについて
+
+     - NFT_MINT/src -> expressのメインコード(main.ts)
+        - NFT_MINT/src/以下に機能ごとに命名したフォルダを作成してmain.tsでimportして使用する事を想定
+     - NFT_MINT/src/contracts -> Solidityファイル専用
+     - NFT_MINT/src/scripts -> Hardhatのサンプルコード
+
+### その他
+不明点などエラーに関連しないものはslackへ、エラー等はこのリポジトリの[issues](https://github.com/papilioio/nft_mint/issues)にエラーメッセージも含めて投稿してください
