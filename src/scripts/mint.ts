@@ -31,3 +31,5 @@ const mintNFT = async () => {
         })
     }
 }
+
+export default mintNFT
