@@ -7,6 +7,7 @@ const PRIVATE_KEY = "";//hardhatのAccount0のPrivateKey
 const PROVIDER_URL = "http://localhost:8545";
 
 const mintNFT = async () => {
+    console.log('mint!')
     const web3 = new Web3(PROVIDER_URL);
     const contract = require("../artifacts/contracts/MYNFT.sol/MYNFT.json");
     const nftContract = new web3.eth.Contract(contract.abi, CONTRACT_ADDRESS);

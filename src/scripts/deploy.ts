@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
 
-async function main() {
+const deploy = async() => {
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -14,17 +14,14 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("MYNFT");
-  const greeter = await Greeter.deploy();
+  console.log('deproy')
+  const MyNft = await ethers.getContractFactory("MYNFT")
+  const mynft = await MyNft.deploy();
 
-  await greeter.deployed();
+  await mynft.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  return `Greeter deployed to: ${mynft.address}`
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+export default deploy
+

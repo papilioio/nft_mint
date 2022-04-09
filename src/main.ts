@@ -1,6 +1,8 @@
 import express from 'express'
 
 import getAccounts from './hardhat_functions/getAccounts'
+import deploy from './scripts/deploy'
+import mintNFT from './scripts/mint'
 
 const app: express.Express = express()
 app.use(express.json())
@@ -26,4 +28,14 @@ app.listen(3000, () => {
 app.get('/', async(req: express.Request, res: express.Response) => {
     const accounts = await getAccounts()
     res.send(JSON.stringify(accounts))
+})
+
+app.get('/deploy', async(req: express.Request, res: express.Response) => {
+    const dep_res = await deploy()
+    res.send(JSON.stringify(dep_res))
+})
+
+app.get('/mint', async(req: express.Request, res: express.Response) => {
+    const mint_res = await mintNFT()
+    res.send(JSON.stringify(mint_res))
 })
