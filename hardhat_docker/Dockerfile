@@ -11,7 +11,7 @@ ENV TZ=Asia/Tokyo
 WORKDIR /usr/src/app
 #このDockerfileと同ディレクトリにあるrupackage.jsonをContainerの/usr/src/appにコピー
 COPY ./src .
-
+RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 RUN npm install
 
 CMD ["npx", "hardhat","node"]
